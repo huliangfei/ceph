@@ -1,0 +1,22 @@
+1、检查Ceph的安装状态：
+# ceph -s 或者  ceph status
+2、观察集群健康状况：
+# ceph -w
+3、检查Ceph monitor仲裁状态：
+# ceph quorum_status --format json-pretty
+4、导出Ceph monitor信息：
+# ceph mon dump 
+5、检查集群使用状态：
+# ceph df
+6、检查Ceph monitor、OSD和PG（配置组）状态：
+# ceph mon stat
+# ceph osd stat
+# ceph pg stat
+7、列表PG:
+# ceph pg dump
+8、列表Ceph存储池：
+# ceph osd lspools
+9、检查OSD的CRUSH map:
+# ceph osd tree
+10、列表群集的认证密钥：
+# ceph auth list
