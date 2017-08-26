@@ -1,0 +1,42 @@
+更換硬盤時間需注意：
+更換硬盤后，會重新均衡數據，大量佔用IO。因此需在非業務高峰時期更換，或標誌先不均衡數據
+
+Ceph更換硬盤操作
+
+1 确认故障磁盘/或者使用hpssaCli 工具进行检测
+dmesg
+确认对应的 OSD NUM
+mount | grep -E 'sdc|sdf'
+停止故障 ceph
+/etc/init.d/ceph stop osd.11
+检测 ceph 数据迁移情况
+ceph -s 
+待数据迁移完成
+ceph -s 
+更换硬盘前,  切记修复 fstab 避免重启后无法正常挂载磁盘导致无法登录
+更换硬盘, 并查询
+重启后, 重新组RAID
+获得 RAID DEVICE ID
+查询当前 RAID 设备信息
+查询新的 RAID 组
+重新组建 RAID
+重新分区
+dd if=/dev/zero of=/dev/sdc bs=1M count=100  
+dd if=/dev/zero of=/dev/sdf bs=1M count=100  
+parted -s /dev/sdc mklabel GPT  
+parted -s /dev/sdf mklabel GPT  
+parted /dev/sdc mkpart primary xfs 1 100%  
+parted /dev/sdf mkpart primary xfs 1 100%  
+fdisk -l | grep GPT | sort
+格式化
+mkfs.xfs -f -i size=512 /dev/sdc1  
+修复 fstab 重新挂载硬盘
+/dev/sdf1 /var/lib/ceph/osd/ceph-14 xfs defaults 0 0  
+mount -a 
+重新初始化osd
+ceph-osd -i 11 --mkfs --mkkey --osd-uuid dc4f91c1-8792-4948-b68f-2fcea75f53b9
+切记修改 keyring 否则会报错 (参考信息:)
+修复 keyring 方法
+ceph auth list | grep -C 5 osd.14
+启动 ceph 集群后验证
+ceph -s
