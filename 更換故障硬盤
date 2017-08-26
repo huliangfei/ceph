@@ -14,12 +14,14 @@ ceph -s
 待数据迁移完成
 ceph -s 
 更换硬盘前,  切记修复 fstab 避免重启后无法正常挂载磁盘导致无法登录
-更换硬盘, 并查询
-重启后, 重新组RAID
+hpssacli ctrl slot=0 show config
+記錄故障設備信息：範例如下：
+  array G (SAS, Unused Space: 0  MB)
+      logicaldrive 7 (279.4 GB, RAID 0, Failed)
+      physicaldrive 3C:1:8 (port 3C:box 1:bay 8, SAS, 300 GB, OK)
+更换硬盘, 并重新组RAID
+hpssacli ctrl slot=0 create type=ld drives=3C:1:8 raid=0
 获得 RAID DEVICE ID
-查询当前 RAID 设备信息
-查询新的 RAID 组
-重新组建 RAID
 重新分区
 dd if=/dev/zero of=/dev/sdc bs=1M count=100  
 dd if=/dev/zero of=/dev/sdf bs=1M count=100  
